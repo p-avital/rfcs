@@ -80,7 +80,7 @@ default implementation remains a breaking change.)
 
 At runtime, a `final fn` behaves exactly the same as a `fn`.
 
-Removing `final` is always a non-breaking change. (If `final` was preventing
+Removing `final` may be a non-breaking change. (If `final` was preventing
 implementation to prevent a soundness issue, though, this would require
 additional care.)
 
@@ -96,7 +96,9 @@ same crate or module.
 `final` is only allowed in trait definitions. `final` is not allowed on impls
 or their items, non-trait functions, or `extern` blocks.
 
-A `final fn` has no impact on the `dyn`-compatibility of a trait.
+A `final fn` never prevents a trait from having `dyn`-compatibility; the trait
+can remain `dyn`-compatible as long as all non-`final` methods support
+`dyn`-compatibility.
 
 # Drawbacks
 [drawbacks]: #drawbacks
