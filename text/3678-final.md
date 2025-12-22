@@ -98,7 +98,9 @@ or their items, non-trait functions, or `extern` blocks.
 
 A `final fn` never prevents a trait from having `dyn`-compatibility; the trait
 can remain `dyn`-compatible as long as all non-`final` methods support
-`dyn`-compatibility.
+`dyn`-compatibility. This also means that a `final fn` can always be called on
+a `dyn Trait`, even if the same method as a non-`final` `fn` would not have
+been `dyn`-compatible.
 
 # Drawbacks
 [drawbacks]: #drawbacks
@@ -154,12 +156,10 @@ None yet.
 # Future possibilities
 [future-possibilities]: #future-possibilities
 
-`final` could enable calling non-dyn-compatible methods on a `dyn Trait`.
-
-We could add the optimization of not putting `final` methods in the trait
-vtable. A design for this should take into account cases where people *do* want
-`final` methods to appear in the vtable, because they benefit substantially
-from monomorphization.
+`final` methods do not need to appear in a trait's vtable. However, *if* a
+method is `dyn`-compatible, and if it would benefit from monomorphization, we
+could optionally put it in the trait's vtable, perhaps with an explicit option
+to do so.
 
 We could allow `final fn` methods on `#[marker]` traits, which are currently
 not allowed to have any methods (because they can't allow different
