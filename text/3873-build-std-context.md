@@ -1,7 +1,7 @@
 - Feature Name: `build-std-context`
 - Start Date: 2025-06-05
 - RFC PR: [rust-lang/rfcs#3873](https://github.com/rust-lang/rfcs/pull/3873)
-- Rust Issue: [rust-lang/rust#0000](https://github.com/rust-lang/rust/issues/0000)
+- Rust Issue: N/A
 
 ## Summary
 [summary]: #summary
