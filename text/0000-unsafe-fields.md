@@ -539,6 +539,12 @@ StructField :
 The use of unsafe fields on unions shall remain forbidden while the [impact of this feature on
 unions](#safe-unions) is decided.
 
+## Semantics
+
+Projections of fields marked `unsafe` must occur within the context of `unsafe`.
+
+Clippy's [`missing_safety_doc`] lint ensures such fields have accompanying safety documentation.
+
 # Rationale and Alternatives
 
 The design of this proposal is primarily guided by three tenets:
