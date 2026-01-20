@@ -1,7 +1,7 @@
 - Feature Name: `export_visibility`
 - Start Date: 2025-06-12
-- RFC PR: [rust-lang/rfcs#0000](https://github.com/rust-lang/rfcs/pull/0000)
-- Rust Issue:[rust-lang/rust#0000](https://github.com/rust-lang/rust/issues/0000)
+- RFC PR: [rust-lang/rfcs#3834](https://github.com/rust-lang/rfcs/pull/3834)
+- Rust Issue:[rust-lang/rust#151425](https://github.com/rust-lang/rust/issues/151425)
 
 # Summary
 [summary]: #summary
