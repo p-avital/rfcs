@@ -1,7 +1,7 @@
 - Feature Name: `final`
 - Start Date: 2024-07-20
 - RFC PR: [rust-lang/rfcs#3678](https://github.com/rust-lang/rfcs/pull/3678)
-- Rust Issue: [rust-lang/rust#0000](https://github.com/rust-lang/rust/issues/0000)
+- Rust Issue: [rust-lang/rust#131179](https://github.com/rust-lang/rust/issues/131179)
 
 # Summary
 [summary]: #summary
