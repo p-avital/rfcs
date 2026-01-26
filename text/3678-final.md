@@ -3,13 +3,13 @@
 - RFC PR: [rust-lang/rfcs#3678](https://github.com/rust-lang/rfcs/pull/3678)
 - Rust Issue: [rust-lang/rust#131179](https://github.com/rust-lang/rust/issues/131179)
 
-# Summary
+## Summary
 [summary]: #summary
 
 Support restricting implementation of individual methods within traits, using
 the existing unused `final` keyword.
 
-# Motivation
+## Motivation
 [motivation]: #motivation
 
 When defining a trait, the trait can provide optional methods with default
@@ -38,7 +38,7 @@ function safe to call. Without this, callers using `unsafe` code must defend
 against the possibility of an incorrect `read_buf_exact` implementation (e.g.
 returning `Ok(())` without filling the buffer) to avoid UB.
 
-# Explanation
+## Explanation
 [explanation]: #explanation
 
 When defining a trait, the definition can annotate methods or associated
@@ -75,7 +75,7 @@ benefit from monomorphization.
 Note that removing a `final` restriction is a compatible change. (Removing a
 default implementation remains a breaking change.)
 
-# Reference-level explanation
+## Reference-level explanation
 [reference-level-explanation]: #reference-level-explanation
 
 At runtime, a `final fn` behaves exactly the same as a `fn`.
@@ -102,12 +102,12 @@ can remain `dyn`-compatible as long as all non-`final` methods support
 a `dyn Trait`, even if the same method as a non-`final` `fn` would not have
 been `dyn`-compatible.
 
-# Drawbacks
+## Drawbacks
 [drawbacks]: #drawbacks
 
 As with any language feature, this adds more surface area to the language.
 
-# Rationale and alternatives
+## Rationale and alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
 
 Instead of or in addition to this, we could allow inherent `impl` blocks for a
@@ -139,7 +139,7 @@ However, this is a user-visible API difference: the user must import the
 extension trait, and use methods from the extension trait rather than from the
 base trait.
 
-# Prior art
+## Prior art
 [prior-art]: #prior-art
 
 This feature is similar to `final` methods in Java or C++.
@@ -148,12 +148,12 @@ It's also similar to `sealed` in C#, where `sealed class` is something from
 which you can't derive and a base class can use `sealed` on a method to say
 derived classes can't `override` it.
 
-# Unresolved questions
+## Unresolved questions
 [unresolved-questions]: #unresolved-questions
 
 None yet.
 
-# Future possibilities
+## Future possibilities
 [future-possibilities]: #future-possibilities
 
 `final` methods do not need to appear in a trait's vtable. However, *if* a
