@@ -130,9 +130,9 @@ anticipate that tooling support for field safety hygiene will encourage programm
 when their fields carry safety invariants.
 
 Second, we anticipate that good field safety hygiene will narrow the scope of safety audits.
-Presently, to evaluate the soundness of an `unsafe` block, it is not enough for reviewers to *only*
+Currently, to evaluate the soundness of an `unsafe` block, it is not enough for reviewers to *only*
 examine `unsafe` code; the invariants upon which `unsafe` code depends may also be violated in safe
-code. If `unsafe` code depends on field safety invariants, those invariants may presently be
+code. If `unsafe` code depends on field safety invariants, those invariants can currently be
 violated in any safe (or unsafe) context in which those fields are visible. So long as Rust permits
 safety invariants to be violated at-a-distance in safe code, audits of unsafe code must necessarily
 consider distant safe code. (See [*The Scope of Unsafe*].)
@@ -709,7 +709,7 @@ fields have trivial destructors, à la union fields, by requiring that `unsafe` 
 `Copy` or `ManuallyDrop`.
 
 Unfortunately, we discovered that adopting this approach would contradict our design tenets and
-place library authors in an impossible dilemma. To illustrate, let's say a library author presently
+place library authors in an impossible dilemma. To illustrate, let's say a library author currently
 provides an API of this shape:
 
 ```rust
@@ -720,7 +720,7 @@ pub struct SafeAbstraction {
 }
 ```
 
-...and a downstream user presently consumes this API like so:
+...and a downstream user currently consumes this API like so:
 
 ```rust
 let val = SafeAbstraction::default();
