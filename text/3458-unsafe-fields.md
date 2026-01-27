@@ -380,7 +380,7 @@ struct Layout {
     /// # Invariants
     ///
     /// For well-formed layouts, this value is less than `isize::MAX` and is a multiple of the alignment.
-    /// To accomodate incomplete layouts (i.e., those missing trailing padding), this is not a safety invariant.
+    /// To accommodate incomplete layouts (i.e., those missing trailing padding), this is not a safety invariant.
     pub size: usize,
     /// The log₂(alignment) of a type.
     ///
@@ -558,7 +558,7 @@ The design of this proposal is primarily guided by three tenets:
    Uses of `unsafe` fields that cannot violate their invariants *should not* require an unsafe
    block.
 
-This RFC prioritizes the first two tenets before the third. We believe that the benefits doing so —
+This RFC prioritizes the first two tenets before the third. We believe that the benefits of doing so —
 broader utility, more consistent tooling, and a simplified safety hygiene story — outweigh its
 cost, [alarm fatigue](#alarm-fatigue). The third tenet implores us to weigh this cost.
 
@@ -896,7 +896,7 @@ user internalize this hierarchy, or else risk selecting the wrong modifier for t
 
 Although we cannot explore the entire design space of syntactic modifiers here, we broadly feel that
 their additional complexity exceeds that of our proposed design. Our proposed rule that *a field
-marked `unsafe` is unsafe to use* is both pedagogically simple and fail safe; i.e., so long as a
+marked `unsafe` is unsafe to use* is both pedagogically simple and failsafe; i.e., so long as a
 field is marked `unsafe`, it cannot be misused in such a way that its invariant is violated in safe
 code.
 
