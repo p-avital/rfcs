@@ -701,7 +701,7 @@ Usage is Always Unsafe**](#tenet-unsafe-usage-is-always-unsafe). We resolve this
 such fields are a serious violation of good safety hygiene, and accept the risk that this
 documentation is ignored. This risk is minimized by prevalence: we feel that relaxing a field's
 invariant beyond that of its destructor is a rare subset of the cases in which a field carries a
-relaxed variant, which itself a rare subset of the cases in which a field carries a safety
+relaxed invariant, which is itself a rare subset of the cases in which a field carries a safety
 invariant.
 
 Alternatively, we previously considered that this risk might be averted by requiring that `unsafe`
@@ -844,7 +844,7 @@ These challenges motivate first-class support for field safety tooling.
 
 This RFC proposes the rule that *a field marked `unsafe` is unsafe to use*. This rule is flexible
 enough to handle arbitrary field invariants, but — in some scenarios — requires that the user write
-trivial safety comments. For example, in some scenarios, an unsafe is trivially sound to read:
+trivial safety comments. For example, in some scenarios, an unsafe field is trivially sound to read:
 
 ```rust
 struct Even {
@@ -1004,7 +1004,7 @@ addition to this RFC's `unsafe` modifier, additional variants in the form `unsaf
 
 Today, unions provide language support for fields with subtractive *language* invariants. Unions may
 be safely defined, constructed and mutated — but require unsafe to read. Consequently, it is
-possible to place an union into a state where its fields cannot be soundly read, using only safe
+possible to place a union into a state where its fields cannot be soundly read, using only safe
 code; e.g.
 ([playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=1d816399559950ccae810c4a41fab4e9)):
 
