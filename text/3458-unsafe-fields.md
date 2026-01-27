@@ -3,7 +3,7 @@
 - RFC PR: [rust-lang/rfcs#3458](https://github.com/rust-lang/rfcs/pull/3458)
 - Rust Issue: [rust-lang/rust#132922](https://github.com/rust-lang/rust/issues/132922)
 
-# Summary
+## Summary
 
 This RFC proposes extending Rust's tooling support for safety hygiene to named fields that carry
 library safety invariants. Consequently, Rust programmers will be able to use the `unsafe` keyword
@@ -25,7 +25,7 @@ accompanying safety documentation.
 
 [`missing_safety_doc`]: https://rust-lang.github.io/rust-clippy/master/index.html#missing_safety_doc
 
-# Motivation
+## Motivation
 
 Safety hygiene is the practice of denoting and documenting where memory safety obligations arise
 and where they are discharged. Rust provides some tooling support for this practice. For example,
@@ -142,7 +142,7 @@ consider distant safe code. (See [*The Scope of Unsafe*].)
 For crates that practice good safety hygiene, reviewers will mostly be able to limit their review
 of distant routines to only `unsafe` code.
 
-# Guide-level explanation
+## Guide-level explanation
 
 A safety invariant is any boolean statement about the computer at a time *t*, which should remain
 true or else undefined behavior may arise. Language safety invariants are imposed by Rust
@@ -344,9 +344,9 @@ field in `ManuallyDrop`; e.g.:
   }
 ```
 
-## When *Not* To Use Unsafe Fields
+### When *Not* To Use Unsafe Fields
 
-### Relaxing a Language Invariant
+#### Relaxing a Language Invariant
 
 The `unsafe` modifier is appropriate only for denoting *library* safety invariants. It has no impact
 on *language* safety invariants, which must *never* be violated. This, for example, is an unsound
@@ -367,7 +367,7 @@ impl<T> Zeroed<T> {
 
 ...because `Zeroed::<NonZeroU8>::zeroed()` induces undefined behavior.
 
-### Denoting a Correctness Invariant
+#### Denoting a Correctness Invariant
 
 A library *correctness* invariant is an invariant imposed by an API whose violation must not result
 in undefined behavior. In the below example, unsafe code may rely on `alignment_pow`s invariant,
@@ -398,7 +398,7 @@ We might also imagine a variant of the above example where `alignment_pow`, like
 carry a safety invariant. Ultimately, whether or not it makes sense for a field to be `unsafe` is a
 function of programmer preference and API requirements.
 
-## Complete Example
+### Complete Example
 
 The below example demonstrates how field safety support can be applied to build a practical
 abstraction with small safety boundaries
@@ -518,9 +518,9 @@ impl<T> DerefMut for UniqueArc<T> {
 }
 ```
 
-# Reference-level explanation
+## Reference-level explanation
 
-## Syntax
+### Syntax
 
 The [`StructField` syntax][struct syntax], used for the named fields of structs, enums, and unions,
 shall be updated to accommodate an optional `unsafe` keyword just before the field `IDENTIFIER`:
@@ -538,13 +538,13 @@ StructField :
 The use of unsafe fields on unions shall remain forbidden while the [impact of this feature on
 unions](#safe-unions) is decided.
 
-## Semantics
+### Semantics
 
 Projections of fields marked `unsafe` must occur within the context of `unsafe`.
 
 Clippy's [`missing_safety_doc`] lint ensures such fields have accompanying safety documentation.
 
-# Rationale and Alternatives
+## Rationale and Alternatives
 
 The design of this proposal is primarily guided by three tenets:
 
@@ -562,7 +562,7 @@ This RFC prioritizes the first two tenets before the third. We believe that the 
 broader utility, more consistent tooling, and a simplified safety hygiene story — outweigh its
 cost, [alarm fatigue](#alarm-fatigue). The third tenet implores us to weigh this cost.
 
-## Tenet: Unsafe Fields Denote Safety Invariants
+### Tenet: Unsafe Fields Denote Safety Invariants
 
 > A field *should* be marked `unsafe` if it carries library safety invariants.
 
@@ -573,7 +573,7 @@ conditional on upholding safety invariants; for example:
 - An `unsafe` trait denotes that it carries safety invariants that must be upheld by implementors.
 - An `unsafe` function denotes that it carries safety invariants that must be upheld by callers.
 
-## Tenet: Unsafe Usage is Always Unsafe
+### Tenet: Unsafe Usage is Always Unsafe
 
 > Uses of `unsafe` fields that could violate their invariants *must* occur in the scope of an
 > `unsafe` block.
@@ -584,7 +584,7 @@ imposes when applied to other declarations; for example:
 - An `unsafe` trait may only be implemented with an `unsafe impl`.
 - An `unsafe` function is only callable in the scope of an `unsafe` block.
 
-## Tenet: Safe Usage is Usually Safe
+### Tenet: Safe Usage is Usually Safe
 
 > Uses of `unsafe` fields that cannot violate their invariants *should not* require an unsafe block.
 
@@ -593,12 +593,12 @@ experience of practicing it. We adopt this tenet as a forcing function between d
 our first two tenets. All else being equal, we give priority to designs that minimize the needless
 use of `unsafe`.
 
-## Alternatives
+### Alternatives
 
 These tenets effectively constrain the design space of tooling for field safety hygiene; the
 alternatives we have considered conflict with one or more of these tenets.
 
-### Unsafe Variants
+#### Unsafe Variants
 
 We propose that the `unsafe` keyword be applicable on a per-field basis. Alternatively, we can
 imagine it being applied on a per-constructor basis; e.g.:
@@ -629,7 +629,7 @@ variants are conceptually unsafe, requiring the programmer to use `unsafe` even 
 of 'safe' fields. This violates [*Tenet: Safe Usage is Usually
 Safe*](#tenet-safe-usage-is-usually-safe).
 
-### Field Moving is Safe
+#### Field Moving is Safe
 
 We propose that all uses of `unsafe` fields require `unsafe`, including reading. Alternatively, we
 might consider making reads safe. However, a field may carry an invariant that would be violated by
@@ -654,7 +654,7 @@ documents its safety conditions as they relate to `KeepAlive`), rather than in d
 interactions with `UnsafeCell<T>` (whose methods necessarily provide only general guidance).
 Consequently, we require that moving unsafe fields out of their enclosing type requires `unsafe`.
 
-### Field Copying is Safe
+#### Field Copying is Safe
 
 We propose that all uses of unsafe fields require `unsafe`, including copying. Alternatively, we
 might consider making field copies safe. However, a field may carry an invariant that could be
@@ -663,7 +663,7 @@ imposes an invariant on the value of `T`. In this alternative proposal, such a f
 copiable out of its enclosing type, then safely mutated via the API of `RefCell`. Consequently, we
 require that copying unsafe fields out of their enclosing type requires `unsafe`.
 
-### Copy Is Safe To Implement
+#### Copy Is Safe To Implement
 
 We propose that `Copy` is conditionally unsafe to implement; i.e., that the `unsafe` modifier is
 required to implement `Copy` for types that have unsafe fields. Alternatively, we can imagine
@@ -692,7 +692,7 @@ However, the `ptr` field introduces a declaration-site safety obligation that is
 with `unsafe` at any use site; this violates [**Tenet: Unsafe Usage is Always
 Unsafe**](#tenet-unsafe-usage-is-always-unsafe).
 
-### Nontrivial Destructors are Prohibited
+#### Nontrivial Destructors are Prohibited
 
 If a programmer applies the `unsafe` modifier to a field with a nontrivial destructor and relaxes
 its invariant beyond that required by the field's destructor, Rust cannot prevent the
@@ -758,7 +758,7 @@ Unsafe Fields Denote Safety Invariants**](#tenet-unsafe-fields-denote-safety-inv
 requiring trivially `unsafe` drop glue), a violation of [**Tenet: Safe Usage is Usually
 Safe**](#tenet-safe-usage-is-usually-safe).
 
-### Unsafe Wrapper Type
+#### Unsafe Wrapper Type
 
 This RFC proposes extending the Rust language with first-class support for field (un)safety.
 Alternatively, we could attempt to achieve the same effects by leveraging Rust's existing visibility
@@ -840,7 +840,7 @@ exchanging the `len`s of two instances of the aforementioned `Vec`).
 
 These challenges motivate first-class support for field safety tooling.
 
-### More Syntactic Granularity
+#### More Syntactic Granularity
 
 This RFC proposes the rule that *a field marked `unsafe` is unsafe to use*. This rule is flexible
 enough to handle arbitrary field invariants, but — in some scenarios — requires that the user write
@@ -900,7 +900,7 @@ marked `unsafe` is unsafe to use* is both pedagogically simple and failsafe; i.e
 field is marked `unsafe`, it cannot be misused in such a way that its invariant is violated in safe
 code.
 
-### Mixing Syntactic Knobs with a Wrapper Type
+#### Mixing Syntactic Knobs with a Wrapper Type
 
 One alternative proposed in this RFC's discussion recommends a combination of syntactic knobs and a
 wrapper type. In brief, a simple [`Unsafe` wrapper type](#unsafe-wrapper-type) would be provided,
@@ -930,9 +930,9 @@ field so that field's safety documentation may be examined.
 Comparatively, we believe that this RFC's proposal is both pedagogically simpler and less prone to
 misuse, and that these benefits outweigh its [drawbacks](#drawbacks).
 
-# Drawbacks
+## Drawbacks
 
-## Trivial Safety Proofs
+### Trivial Safety Proofs
 
 The primary drawback of this proposal is that it — in some scenarios — necessitates writing
 'trivial' safety proofs. For example, merely reading `Vec`'s `len` field obviously cannot invalidate
@@ -956,19 +956,19 @@ but **not** *must* — denote field safety invariants with the `unsafe` keyword.
 soundness nor security issue to continue to adhere to the current convention of using visibility to
 enforce field safety invariants.
 
-# Prior art
+## Prior art
 
 Some items in the Rust standard library have `#[rustc_layout_scalar_valid_range_start]`,
 `#[rustc_layout_scalar_valid_range_end]`, or both. These items have identical behavior to that of
 unsafe fields described here. It is likely (though not required by this RFC) that these items will
 be required to use unsafe fields, which would reduce special-casing of the standard library.
 
-# Unresolved questions
+## Unresolved questions
 
 - If the syntax for restrictions does not change, what is the ordering of keywords on a field that
   is both unsafe and mut-restricted?
 
-## Terminology
+### Terminology
 
 This RFC defines three terms of art: *safety invariant*, *library safety invariant*, and *language
 safety invariant*. The meanings of these terms are not original to this RFC, and the question of
@@ -977,9 +977,9 @@ debated](https://github.com/rust-lang/unsafe-code-guidelines/issues/539). This R
 prescribe its terminology. Documentation of the unsafe fields tooling should reflect broader
 consensus, once that consensus is reached.
 
-# Future possibilities
+## Future possibilities
 
-## Partial Borrows
+### Partial Borrows
 
 The primary drawback of this proposal is that it — in some scenarios — necessitates writing
 'trivial' safety proofs. For example, merely reading `Vec`'s `len` field obviously cannot invalidate
@@ -990,7 +990,7 @@ maintainer can define a *safe* accessor (i.e.,
 proof. However, in cases where multiple, partial field borrows are required, such an accessor cannot
 be invoked. Future language extensions that permit partial borrows will resolve this drawback.
 
-## Syntactic Knobs and Wrapper Types
+### Syntactic Knobs and Wrapper Types
 
 While we are confident that this RFC has the best tradeoffs among the alternatives in the design
 space, it is not a one-way door. Changes to the default semantics of `unsafe` could be realized over
@@ -1000,7 +1000,7 @@ knobs](#more-syntactic-granularity) and [wrapper types](#unsafe-wrapper-type). F
 addition to this RFC's `unsafe` modifier, additional variants in the form `unsafe(<modifiers>)`
 (e.g., `unsafe(mut)`) could be added to denote that some subset of uses is always safe.
 
-## Safe Unions
+### Safe Unions
 
 Today, unions provide language support for fields with subtractive *language* invariants. Unions may
 be safely defined, constructed and mutated — but require unsafe to read. Consequently, it is
