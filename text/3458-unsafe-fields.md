@@ -301,7 +301,7 @@ struct MaybeInvalidStr {
 by the library safety invariant that it contains valid UTF-8, but because it is trivially
 destructible, no special action needs to be taken to ensure it is in a safe-to-drop state.
 
-By contrast, `Box` has a non-trivial destructor which requires that its referent has the same size
+By contrast, `Box` has a nontrivial destructor which requires that its referent has the same size
 and alignment that the referent was allocated with. Merely adding the `unsafe` modifier to a `Box`
 field, e.g.:
 
@@ -692,9 +692,9 @@ However, the `ptr` field introduces a declaration-site safety obligation that is
 with `unsafe` at any use site; this violates [**Tenet: Unsafe Usage is Always
 Unsafe**](#tenet-unsafe-usage-is-always-unsafe).
 
-### Non-Trivial Destructors are Prohibited
+### Nontrivial Destructors are Prohibited
 
-If a programmer applies the `unsafe` modifier to a field with a non-trivial destructor and relaxes
+If a programmer applies the `unsafe` modifier to a field with a nontrivial destructor and relaxes
 its invariant beyond that which is required by the field's destructor, Rust cannot prevent the
 unsound use of that field in safe contexts. This is, seemingly, a soft violation of [**Tenet: Unsafe
 Usage is Always Unsafe**](#tenet-unsafe-usage-is-always-unsafe). We resolve this by documenting that
@@ -994,7 +994,7 @@ be invoked. Future language extensions that permit partial borrows will resolve 
 
 While we are confident that this RFC has the best tradeoffs among the alternatives in the design
 space, it is not a one-way door. Changes to the default semantics of `unsafe` could be realized over
-an edition boundary. This RFC is also forwards-compatible with some future additions of some
+an edition boundary. This RFC is also forward-compatible with some future additions of some
 [combinations](#mixing-syntactic-knobs-with-a-wrapper-type) of [syntactic
 knobs](#more-syntactic-granularity) and [wrapper types](#unsafe-wrapper-type). For example, in
 addition to this RFC's `unsafe` modifier, additional variants in the form `unsafe(<modifiers>)`
