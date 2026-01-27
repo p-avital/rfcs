@@ -145,7 +145,7 @@ of distant routines to only `unsafe` code.
 # Guide-level explanation
 
 A safety invariant is any boolean statement about the computer at a time *t*, which should remain
-true or else undefined behavior may arise. Language safety invariants are imposed by the Rust
+true or else undefined behavior may arise. Language safety invariants are imposed by Rust
 itself and must never be violated; e.g., a `NonZeroU8` must *never* be 0.
 
 Library safety invariants, by contrast, are imposed by an API. For example, `str` encapsulates
@@ -338,7 +338,7 @@ field in `ManuallyDrop`; e.g.:
   struct BoxedErased {
       /// SAFETY: `data`'s logical type has `type_id`.
 -     unsafe data: Box<[MaybeUninit<u8>]>,
-      /// SAFETY: See [`BoxErased::data`].
+    /// SAFETY: See [`BoxedErased::data`].
 +     unsafe data: ManuallyDrop<Box<[MaybeUninit<u8>]>>,
       unsafe type_id: TypeId,
   }
@@ -578,8 +578,8 @@ conditional on upholding safety invariants; for example:
 > Uses of `unsafe` fields which could violate their invariants *must* occur in the scope of an
 > `unsafe` block.
 
-We adopt this tenet because it is consistent with the requirements imposed by the `unsafe` keyword
-imposes when applied to other declarations;  for example:
+We adopt this tenet because it is consistent with the requirements the `unsafe` keyword
+imposes when applied to other declarations; for example:
 
 - An `unsafe` trait may only be implemented with an `unsafe impl`.
 - An `unsafe` function is only callable in the scope of an `unsafe` block.
@@ -658,7 +658,7 @@ Consequently, we require that moving unsafe fields out of their enclosing type r
 
 We propose that all uses of unsafe fields require `unsafe`, including copying. Alternatively, we
 might consider making field copies safe. However, a field may carry an invariant that could be
-violated as consequence a copy. For example, consider a field of type `&'static RefCell<T>` that
+violated as a consequence of a copy. For example, consider a field of type `&'static RefCell<T>` that
 imposes an invariant on the value of `T`. In this alternative proposal, such a field could be safely
 copiable out of its enclosing type, then safely mutated via the API of `RefCell`. Consequently, we
 require that copying unsafe fields out of their enclosing type requires `unsafe`.
@@ -710,7 +710,7 @@ fields have trivial destructors, à la union fields, by requiring that `unsafe` 
 
 Unfortunately, we discovered that adopting this approach would contradict our design tenets and
 place library authors in an impossible dilemma. To illustrate, let's say a library author presently
-provides an API this this shape:
+provides an API of this shape:
 
 ```rust
 pub struct SafeAbstraction {
