@@ -115,7 +115,7 @@ discharged entirely prior to entering the `unsafe` block, the surrounding functi
 
 The absence of tooling for field safety hygiene undermines this cue. The [`Vec::set_len`] method
 *must* be marked `unsafe` because it delegates the responsibility of maintaining `Vec`'s safety
-invariants  to its callers. However, the implementation of [`Vec::set_len`] does not contain any
+invariants to its callers. However, the implementation of [`Vec::set_len`] does not contain any
 explicitly `unsafe` operations. Consequently, there is no tooling cue that suggests this function
 should be unsafe — doing so is entirely a matter of programmer discipline.
 
@@ -302,8 +302,8 @@ by the library safety invariant that it contains valid UTF-8, but because it is 
 destructible, no special action needs to be taken to ensure it is in a safe-to-drop state.
 
 By contrast, `Box` has a non-trivial destructor which requires that its referent has the same size
-and alignment that the referent was allocated with. Adding the `unsafe` modifier to a `Box` field
-that violates this invariant; e.g.:
+and alignment that the referent was allocated with. Merely adding the `unsafe` modifier to a `Box`
+field, e.g.:
 
 ```rust
 struct BoxedErased {
@@ -316,7 +316,7 @@ struct BoxedErased {
 impl BoxedErased {
     fn new<T: 'static>(src: Box<T>) -> Self {
         let data = …; // cast `Box<T>` to `Box<[MaybeUninit<u8>]>`
-        let type_id = TypeId::of::<T>;
+        let type_id = TypeId::of::<T>();
         // SAFETY: …
         unsafe {
             BoxedErased {
@@ -329,8 +329,7 @@ impl BoxedErased {
 ```
 
 ...does not ensure that using `BoxedErased` or its `data` field in safe contexts cannot lead to
-undefined behavior: namely, if `BoxedErased` or its `data` field is dropped, its destructor may induce
-UB.
+undefined behavior: namely, if `BoxedErased` or its `data` field is dropped, its destructor may induce UB.
 
 In such situations, you may avert the potential for undefined behavior by wrapping the problematic
 field in `ManuallyDrop`; e.g.:
