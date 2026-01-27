@@ -37,7 +37,7 @@ discharged (again, optionally enforced by Clippy).
 
 Functions are often marked `unsafe` because they concern the safety invariants of fields. For
 example, [`Vec::set_len`] is `unsafe`, because it directly manipulates its `Vec`'s length field,
-which carries the invariants that it is less than the capacity of the `Vec` and that all elements
+that carries the invariants that it is less than the capacity of the `Vec` and that all elements
 in the `Vec<T>` between 0 and `len` are valid `T`. It is critical that these invariants are upheld;
 if they are violated, invoking most of `Vec`'s other methods will induce undefined behavior.
 
@@ -166,7 +166,7 @@ pub struct UnalignedRef<'a, T> {
 }
 ```
 
-You should use the `unsafe` keyword on any field that carries a library safety invariant which
+You should use the `unsafe` keyword on any field that carries a library safety invariant that
 differs from the invariant provided by its type.
 
 The `unsafe` field modifier is only applicable to named fields. You should avoid attaching library
@@ -301,7 +301,7 @@ struct MaybeInvalidStr {
 by the library safety invariant that it contains valid UTF-8, but because it is trivially
 destructible, no special action needs to be taken to ensure it is in a safe-to-drop state.
 
-By contrast, `Box` has a nontrivial destructor which requires that its referent has the same size
+By contrast, `Box` has a nontrivial destructor that requires that its referent has the same size
 and alignment that the referent was allocated with. Merely adding the `unsafe` modifier to a `Box`
 field, e.g.:
 
@@ -552,10 +552,10 @@ The design of this proposal is primarily guided by three tenets:
    A field *should* be marked `unsafe` if it carries arbitrary library safety invariants with
    respect to its enclosing type.
 2. [**Unsafe Usage is Always Unsafe**](#tenet-unsafe-usage-is-always-unsafe)
-   Uses of `unsafe` fields which could violate their invariants *must* occur in the scope of an
+   Uses of `unsafe` fields that could violate their invariants *must* occur in the scope of an
    `unsafe` block.
 3. [**Safe Usage is Usually Safe**](#tenet-safe-usage-is-usually-safe)
-   Uses of `unsafe` fields which cannot violate their invariants *should not* require an unsafe
+   Uses of `unsafe` fields that cannot violate their invariants *should not* require an unsafe
    block.
 
 This RFC prioritizes the first two tenets before the third. We believe that the benefits doing so —
@@ -570,12 +570,12 @@ We adopt this tenet because it is consistent with the purpose of the `unsafe` ke
 declaration positions, where it signals to consumers of the `unsafe` item that their use is
 conditional on upholding safety invariants; for example:
 
-- An `unsafe` trait denotes that it carries safety invariants which must be upheld by implementors.
-- An `unsafe` function denotes that it carries safety invariants which must be upheld by callers.
+- An `unsafe` trait denotes that it carries safety invariants that must be upheld by implementors.
+- An `unsafe` function denotes that it carries safety invariants that must be upheld by callers.
 
 ## Tenet: Unsafe Usage is Always Unsafe
 
-> Uses of `unsafe` fields which could violate their invariants *must* occur in the scope of an
+> Uses of `unsafe` fields that could violate their invariants *must* occur in the scope of an
 > `unsafe` block.
 
 We adopt this tenet because it is consistent with the requirements the `unsafe` keyword
@@ -586,7 +586,7 @@ imposes when applied to other declarations; for example:
 
 ## Tenet: Safe Usage is Usually Safe
 
-> Uses of `unsafe` fields which cannot violate their invariants *should not* require an unsafe block.
+> Uses of `unsafe` fields that cannot violate their invariants *should not* require an unsafe block.
 
 Good safety hygiene is a social contract and adherence to that contract will depend on the user
 experience of practicing it. We adopt this tenet as a forcing function between designs that satisfy
@@ -695,7 +695,7 @@ Unsafe**](#tenet-unsafe-usage-is-always-unsafe).
 ### Nontrivial Destructors are Prohibited
 
 If a programmer applies the `unsafe` modifier to a field with a nontrivial destructor and relaxes
-its invariant beyond that which is required by the field's destructor, Rust cannot prevent the
+its invariant beyond that required by the field's destructor, Rust cannot prevent the
 unsound use of that field in safe contexts. This is, seemingly, a soft violation of [**Tenet: Unsafe
 Usage is Always Unsafe**](#tenet-unsafe-usage-is-always-unsafe). We resolve this by documenting that
 such fields are a serious violation of good safety hygiene, and accept the risk that this
