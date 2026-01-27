@@ -239,7 +239,7 @@ error[E0133]: use of unsafe field is unsafe and requires unsafe block
 note: an unsafe function restricts its caller, but its body is safe by default
   --> src/lib.rs:24:5
    |
-24 |     pub unsafe fn as_mut_lug(&mut self) -> &mut u8 {
+24 |     pub unsafe fn as_mut_log(&mut self) -> &mut u8 {
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 note: the lint level is defined here
   --> src/lib.rs:1:38
@@ -279,7 +279,7 @@ For more information about this error, try `rustc --explain E0133`.
       /// # Safety
       ///
       /// The caller promises to not write a value greater than 29 into the returned reference.
-      pub unsafe fn as_mut_lug(&mut self) -> &mut u8 {
+      pub unsafe fn as_mut_log(&mut self) -> &mut u8 {
 -         &mut self.pow
 +         // SAFETY: The caller promises not to violate `pow`'s invariant.
 +         unsafe { &mut self.pow }
@@ -329,7 +329,7 @@ impl BoxedErased {
 ```
 
 ...does not ensure that using `BoxedErased` or its `data` field in safe contexts cannot lead to
-undefined behavior: namely, if `BoxErased` or its `data` field is dropped, its destructor may induce
+undefined behavior: namely, if `BoxedErased` or its `data` field is dropped, its destructor may induce
 UB.
 
 In such situations, you may avert the potential for undefined behavior by wrapping the problematic
