@@ -12,7 +12,7 @@ to denote when a named field carries a library safety invariant; e.g.:
 ```rust
 struct UnalignedRef<'a, T> {
     /// # Safety
-    /// 
+    ///
     /// `ptr` is a shared reference to a valid-but-unaligned instance of `T`.
     unsafe ptr: *const T,
     _lifetime: PhantomData<&'a T>,
@@ -77,7 +77,7 @@ construction and access through `unsafe` functions; e.g.:
 mod def {
     pub struct UnalignedRef<'a, T> {
         /// # Safety
-        /// 
+        ///
         /// `ptr` is a shared reference to a valid-but-unaligned instance of `T`.
         pub(self) unsafe ptr: *const T,
         pub(self) _lifetime: PhantomData<&'a T>,
@@ -159,7 +159,7 @@ and where they are discharged. To denote that a field carries a library safety i
 ```rust
 pub struct UnalignedRef<'a, T> {
     /// # Safety
-    /// 
+    ///
     /// `ptr` is a shared reference to a valid-but-unaligned instance of `T`.
     unsafe ptr: *const T,
     _lifetime: PhantomData<&'a T>,
@@ -549,13 +549,13 @@ Clippy's [`missing_safety_doc`] lint ensures such fields have accompanying safet
 
 The design of this proposal is primarily guided by three tenets:
 
-1. [**Unsafe Fields Denote Safety Invariants**](#tenet-unsafe-fields-denote-safety-invariants)   
+1. [**Unsafe Fields Denote Safety Invariants**](#tenet-unsafe-fields-denote-safety-invariants)
    A field *should* be marked `unsafe` if it carries arbitrary library safety invariants with
    respect to its enclosing type.
-2. [**Unsafe Usage is Always Unsafe**](#tenet-unsafe-usage-is-always-unsafe)   
+2. [**Unsafe Usage is Always Unsafe**](#tenet-unsafe-usage-is-always-unsafe)
    Uses of `unsafe` fields which could violate their invariants *must* occur in the scope of an
    `unsafe` block.
-3. [**Safe Usage is Usually Safe**](#tenet-safe-usage-is-usually-safe)   
+3. [**Safe Usage is Usually Safe**](#tenet-safe-usage-is-usually-safe)
    Uses of `unsafe` fields which cannot violate their invariants *should not* require an unsafe
    block.
 
@@ -653,7 +653,7 @@ safe to use `arc` — it is not. By requiring `unsafe` to read `arc`, Rust's saf
 narrow safety boundary: the user is forced to justify their actions when accessing `arc` (which
 documents its safety conditions as they relate to `KeepAlive`), rather than in downstream
 interactions with `UnsafeCell<T>` (whose methods necessarily provide only general guidance).
-Consequently, we require that moving unsafe fields out of their enclosing type requires `unsafe`. 
+Consequently, we require that moving unsafe fields out of their enclosing type requires `unsafe`.
 
 ### Field Copying is Safe
 
