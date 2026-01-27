@@ -132,7 +132,7 @@ when their fields carry safety invariants.
 Second, we anticipate that good field safety hygiene will narrow the scope of safety audits.
 Presently, to evaluate the soundness of an `unsafe` block, it is not enough for reviewers to *only*
 examine `unsafe` code; the invariants upon which `unsafe` code depends may also be violated in safe
-code. If `unsafe` code depends upon field safety invariants, those invariants may presently be
+code. If `unsafe` code depends on field safety invariants, those invariants may presently be
 violated in any safe (or unsafe) context in which those fields are visible. So long as Rust permits
 safety invariants to be violated at-a-distance in safe code, audits of unsafe code must necessarily
 consider distant safe code. (See [*The Scope of Unsafe*].)
@@ -370,7 +370,7 @@ impl<T> Zeroed<T> {
 ### Denoting a Correctness Invariant
 
 A library *correctness* invariant is an invariant imposed by an API whose violation must not result
-in undefined behavior. In the below example, unsafe code may rely upon `alignment_pow`s invariant,
+in undefined behavior. In the below example, unsafe code may rely on `alignment_pow`s invariant,
 but not `size`'s invariant:
 
 ```rust
