@@ -88,17 +88,26 @@ fn parse_my_data<
 
 Before this RFC, the syntax rules of parenthesized generic argument lists are:
 ```grammar,types
-TypePathFn -> `(` TypePathFnInputs? `)` (`->` TypeNoBounds)?
+GenericArgs ->
+      `<` GenericArgList? `>`
+    | `(` TypeList? `)` ( `->` TypeNoBounds )?
 
-TypePathFnInputs -> Type (`,` Type)* `,`?
+TypeList ->
+    `(` Type `,` `)`* Type `,`?
 ```
 
-After this RFC, the `TypePathFnInputs` rule will be replaced by:
+After this RFC, these rules will be replaced by:
 
 ```grammar,types
-TypePathFnInputs -> TypePathFnInput (`,` TypePathFnInput)* `,`?
+GenericArgs ->
+      `<` GenericArgList? `>`
+    | `(` MaybeNamedFunctionParameters? `)` ( `->` TypeNoBounds )?
 
-TypePathFnInput -> OuterAttribute* ( ( RestrictedPat | `_` ) `:` )? Type
+MaybeNamedFunctionParameters →
+    `(` MaybeNamedParam `,` `)`* MaybeNamedParam `,`?
+    
+MaybeNamedParam →
+    OuterAttribute* (RestrictedPat `:`)? Type
 ```
 
 Below are two chapters on some design tradeoffs made here.
@@ -126,8 +135,9 @@ Therefore, the following program compiles:
 type F = fn(mut x: (), &x: (), &&x: (), false: (), &_: (), &true: ());
 ```
 ```
-RestrictedPat = Ident | "&" Ident | "&&" Ident | "mut" CommonIdent;
-Ident = CommonIdent | ReservedIdent (* includes `_`, `false`, `true` *)
+RestrictedPat ->
+      `mut`? IDENTIFIER
+    | ( `&` | `&&` )? ( `_` | `false` | `true` | IDENTIFIER )
 ```
 
 #### trait functions without bodies 
