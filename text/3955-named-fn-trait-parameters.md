@@ -57,10 +57,8 @@ fn parse_my_data(
 ) { }
 ```
 
-If due to new requirements the user decides that `impl Fn` suits the usecase better, having to remove the parameter names is unintuive.
+If due to new requirements the user decides that `impl Fn` suits the usecase better, having to remove the parameter names is unintuitive.
 This RFC removes this problem.
-
-Note that the syntax for this feature does not exactly match that of `fn` pointers, see the [reference level explanation](#reference-level-explanation).
 
 ## Guide-level explanation
 [guide-level-explanation]: #guide-level-explanation
@@ -100,13 +98,13 @@ After this RFC, the `TypePathFnInputs` rule will be replaced by:
 ```grammar,types
 TypePathFnInputs -> TypePathFnInput (`,` TypePathFnInput)* `,`?
 
-TypePathFnInput -> ( ( IDENTIFIER | `_` ) `:` )? Type
+TypePathFnInput -> OuterAttribute* ( ( RestrictedPat | `_` ) `:` )? Type
 ```
 
 Below are two chapters on some design tradeoffs made here.
 
-### Attributes are not allowed on parenthesized generic argument lists
-Attributes are not allowed on parameters of these traits. This remains unchanged from the current situation. The following will not work:
+### Attributes are allowed on parenthesized generic argument lists
+Attributes are allowed on parameters in parenthesized generic argument lists:
 ```rust
 fn test(x: impl Fn(#[cfg(...)] msg: String, priority: usize), y: usize) { }
 ```
@@ -114,18 +112,14 @@ Note that attributes are already allowed on `fn` pointers:
 ```rust
 fn test(x: fn(#[cfg(...)] msg: String, priority: usize), y: usize) { }
 ```
-The reason why attributes are not allowed is to keep this RFC and the implementation simple.
-Allowing attributes such as `#[cfg(...)]` could be useful, but is out of scope for this RFC.
-This choice is the most safe and conservative choice, attributes could be allowed in the future.
   
-### Patterns are not allowed in parenthesized generic argument lists
-This syntax is not consistent with other features in the language.
-The names of function parameters are limited to ``IDENTIFIER | `_` ``.
-This choice is made because it is the most safe and conservative choice, keeping the option open to allow patterns in the future if desired.
+### Restricted patterns are syntactically but not semantically allowed in parenthesized generic argument lists
+This syntax is consistent with that of function pointers.
+Semantically, the names of function parameters are limited to ``IDENTIFIER | `_` ``.
 Below is a comparison with two other language features:  
 
-#### `fn` pointers
-This is unlike `fn` pointers, which allows a `RestrictedPat` (and then semantically rejects anything other than identifiers).
+#### Parameters of `fn` pointers and `Fn` trait
+Like on `fn` pointers, a `RestrictedPat` is syntactically allowed.
 Therefore, the following program compiles:
 ```rust
 #[cfg(false)]
@@ -137,7 +131,7 @@ Ident = CommonIdent | ReservedIdent (* includes `_`, `false`, `true` *)
 ```
 
 #### trait functions without bodies 
-This is also unlike trait functions without bodies. Arbitrary patterns are allowed (and then semantically anything other than identifiers is rejected).
+For comparison, trait functions without bodies are more permissive than this. Arbitrary patterns are allowed (and then semantically still anything other than identifiers is rejected).
 Therefore, the following program compiles:
 ```rust
 #[cfg(false)]
@@ -150,12 +144,11 @@ trait Test {
 [drawbacks]: #drawbacks
 
 * This makes the syntax of `impl Fn` and friends slightly more complicated
-* This keeps the syntax of `impl Fn` and friends inconsistent with that of `fn` pointers nor functions in trait definitions, for the reasoning about this see  [reference level explanation](#reference-level-explanation).
+* This keeps the syntax of `impl Fn` and friends inconsistent with that of functions in trait definitions, for the reasoning about this see  [reference level explanation](#reference-level-explanation).
 
 ## Rationale and alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-* An alternative would be to match the `fn` pointer syntax perfectly. This would make the implementation more complicated, without much benefit other than consistency.
 * This needs to be implemented in the language, it cannot be provided by a macro or library as it affects syntactic sugar of the language itself.
 * This makes Rust code easier to read, as it adds better ways to document function signatures.
 
@@ -193,9 +186,10 @@ fun log(data: String, logFunction: (msg: String, priority: Int) -> Unit) { }
 ## Future possibilities
 [future-possibilities]: #future-possibilities
 
-* We could allow attributes on `impl Fn` parameters in the future.
-
 * We should figure out how this feature interacts with the "named arguments" feature. 
   One proposal is to mirror whatever solution we come up with for function pointers.
   For example, if named arguments used the syntax `fn f(pub a: T, pub b: U) -> R`, the function trait should be `Fn(pub a: T, pub b: U) -> R`.
+* Similarly, we should figure out how this feature interacts with the "defaulted arguments" feature.
+  Again, this should mirror function pointers.
+  For example, if default arguments used the syntax `fn(x: String, y: i32 = 0)`, the function trait should be `Fn(x: String, y: i32 = 0)`.
 
